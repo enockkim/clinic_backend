@@ -54,12 +54,14 @@ namespace clinic.Controllers
             {
                 //var res = AppointmentsComponent.GetAppointments(appointmentType, appointmentStatus).Result;  
                 var appointments = await clinic.GetAppointments();
-                var res = appointmentType == 0
-                    ?
-                    //all appointment types
-                    appointments.Where(i => i.appointmentStatus == appointmentStatus).ToList()
-                    :
-                    appointments.Where(i => i.appointmentStatus == appointmentStatus && i.appointmentType == appointmentType).ToList();
+                var appType = appointmentType;
+                var res = appointments.Where(i => i.appointmentStatus == appointmentStatus).ToList();          
+                //var res = appointmentType == 0
+                //    ?
+                //    //all appointment types
+                //    appointments.Where(i => i.appointmentStatus == appointmentStatus).ToList()
+                //    :
+                //    appointments.Where(i => i.appointmentStatus == appointmentStatus && i.appointmentType == appointmentType).ToList();
 
 
                 foreach (var item in res)
@@ -142,21 +144,27 @@ namespace clinic.Controllers
                         };
                         await clinic.CreateConsultation(consultationRecord);
                         appoointmentUpdate.appointmentType = 3;
+                        appoointmentUpdate.patientType = 2;
                         ProcessPatientTransfer("consultation fee", appoointmentUpdate, 2);
                         break;
                     case 2:
+                        appoointmentUpdate.patientType = 1;
                         ProcessPatientTransfer("maternity fee", appoointmentUpdate, 1);
                         break;
                     case 6:
+                        appoointmentUpdate.patientType = 1;
                         ProcessPatientTransfer("emergency and casualty fee", appoointmentUpdate, 1);
                         break;
                     case 7:
+                        appoointmentUpdate.patientType = 1;
                         ProcessPatientTransfer("ward admission fee", appoointmentUpdate, 1);
                         break;
                     case 8:
+                        appoointmentUpdate.patientType = 1;
                         ProcessPatientTransfer("icu admission fee", appoointmentUpdate, 1);
                         break;
                     case 9:
+                        appoointmentUpdate.patientType = 1;
                         ProcessPatientTransfer("moturary fee", appoointmentUpdate, 1);
                         break;
                     case 15:
@@ -167,9 +175,12 @@ namespace clinic.Controllers
                         };
                         await clinic.CreateConsultation(consultationRecord);
                         appoointmentUpdate.appointmentType = 1;
+                        appoointmentUpdate.patientType = 2;
                         ProcessPatientTransfer("dental consultation fee", appoointmentUpdate, 2);
                         break;
                     case 10:
+                        appoointmentUpdate.appointmentType = 3;
+                        appoointmentUpdate.patientType = 2;
                         ProcessPatientTransfer("vital fee", appoointmentUpdate, 2);
                         //create vital record
                         var triageRecord = new Vital

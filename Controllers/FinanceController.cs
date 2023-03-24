@@ -1,5 +1,7 @@
 ﻿using clinic.Models.clinic;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 
 namespace clinic.Controllers
 {
@@ -73,6 +75,7 @@ namespace clinic.Controllers
             try
             {
                 var res = clinic.GetCashType().Result;
+                Response.Headers.Add("Access-Control-Allow-Origin", "*");
                 return res.ToList();
             }
             catch (Exception ex)
@@ -82,8 +85,9 @@ namespace clinic.Controllers
             }
         }
 
+        [EnableCors("AllowOrigin")]
         [HttpPost("PayBill")]
-        public async Task<bool> PayBill([FromBody] AccountsReceivable paymentDetails)
+        public async Task<bool> PayBill([FromBody] RawAccountsReceivable paymentDetails)
         {
             //AddAccountsReceivableComponent FinancesComponent = new AddAccountsReceivableComponent(clinic);
             try
@@ -108,6 +112,7 @@ namespace clinic.Controllers
 
 
                     appointment.appointmentStatus = appointment.previousFacility; // (int)clinic.GetBillDetails().Result.OrderByDescending(i => i.entryNo).Where(i => i.billNo == billNo).Select(i => i.facility).FirstOrDefault();
+                    appointment.previousFacility = appointment.appointmentType == 1 ? 15 : (appointment.appointmentType == 2 || appointment.appointmentType == 3 ? 1 : appointment.previousFacility); //TODO need to adjust logic to work with other facilities
                     await clinic.UpdateAppointment(appointment.appointmentId, appointment);
 
                     var billDetails = details.Where(i => i.billNo == billNo && (i.status == 0 || i.status == 2));
@@ -122,13 +127,13 @@ namespace clinic.Controllers
 
                         AccountsReceivable accountsReceivable = new AccountsReceivable()
                         {
-                            dateOfTransaction = DateTime.Now,
-                            paymentMethod = (int)appointment.paymentMethod,
-                            amountDue = (int)item.cost,
-                            amountPaid = (int)item.cost,
-                            billDetailEntryNo = item.entryNo,
-                            transactionRefrence = paymentDetails.transactionRefrence,
-                            cashType1 = paymentDetails.cashType1
+                            DateOfTransaction = DateTime.Now,
+                            PaymentMethod = (int)appointment.paymentMethod,
+                            AmountDue = (int)item.cost,
+                            AmountPaid = (int)item.cost,
+                            BillDetailEntryNo = item.entryNo,
+                            TransactionRefrence = paymentDetails.transactionRefrence,
+                            CashType = (int)paymentDetails.cashType
                         };
 
                         //Create accounts receivable record
@@ -177,7 +182,14 @@ namespace clinic.Controllers
                         paymentDetails.amountPaid = (int)item.cost;
                         paymentDetails.billDetailEntryNo = item.entryNo;
 
-                        newTransaction.Add(paymentDetails);
+                        newTransaction.Add(new AccountsReceivable()
+                        {
+                            DateOfTransaction = DateTime.Now,
+                            PaymentMethod = (int)appointment.paymentMethod,
+                            AmountDue = (int)item.cost,
+                            AmountPaid = (int)item.cost,
+                            BillDetailEntryNo = item.entryNo
+                        });
                     }
 
                     foreach (var listItem in updatedBillDetails)
@@ -198,7 +210,6 @@ namespace clinic.Controllers
                     //NotificationService.Notify(NotificationSeverity.Success, $"Cleared", $"The patient bill has been cleared", 5000);
 
                 }
-                return false;
                 return true;
             }
             catch (Exception ex)

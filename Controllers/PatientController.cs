@@ -31,10 +31,12 @@ namespace clinic.Controllers
                 {
                     appointmentStatus = 0,
                     createdBy = createPatient.userData.Id,
+                    appointmentType = 0, //default
+                    paymentMethod = 0, //default
                     dateOfCreation = DateTime.Now,
                     patientType = 1,
                     patientId = clinicCreatePatientResult.patientId,
-                    employeeId = null
+                    employeeId = 0 //default
                 };
                 var clinicCreateAppointmentResult = await clinic.CreateAppointment(appointment);
 

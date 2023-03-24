@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components;
 using clinic.Data;
+using MySql.Data.MySqlClient;
+using static log4net.Appender.RollingFileAppender;
 
 namespace clinic
 {
@@ -42,13 +44,13 @@ namespace clinic
 
             items = items.Include(i => i.Patient);
 
-            items = items.Include(i => i.Employee);
+            //items = items.Include(i => i.Employee);
 
             items = items.Include(i => i.Facilities);
 
-            items = items.Include(i => i.PaymentMethod1);
+            //items = items.Include(i => i.PaymentMethod1);
 
-            items = items.Include(i => i.AppointmentType1);
+            //items = items.Include(i => i.AppointmentType1);
 
             items = items.Include(i => i.Facilities);
 
@@ -918,9 +920,9 @@ namespace clinic
         {
             var items = context.Vitals.AsQueryable();
 
-            items = items.Include(i => i.Appointment);
-            items = items.Include(i => i.Appointment.Patient);
-            items = items.Include(i => i.Appointment.Bills);
+            //items = items.Include(i => i.Appointment);
+            //items = items.Include(i => i.Appointment.Patient);
+            //items = items.Include(i => i.Appointment.Bills);
 
             if (query != null)
             {
@@ -4231,10 +4233,21 @@ namespace clinic
 
         public async Task<Models.clinic.AccountsReceivable> CreateAccountsReceivable(Models.clinic.AccountsReceivable accountsReceivableRecord)
         {
-            OnAccountsReceivableCreated(accountsReceivableRecord);
+            //OnAccountsReceivableCreated(accountsReceivableRecord);
 
-            context.AccountsReceivables.Add(accountsReceivableRecord);
-            context.SaveChanges();
+            //context.AccountsReceivables.Add(accountsReceivableRecord);
+            //context.SaveChanges();
+
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            {
+                connection.Open();
+                var query = $"INSERT INTO `clinic`.`accounts_receivable`(`amountDue`,`amountPaid`,`dateOfTransaction`,`paymentMethod`,`cashType`,`billDetailEntryNo`,`transactionRefrence`)VALUES({accountsReceivableRecord.AmountDue},{accountsReceivableRecord.AmountPaid},'{accountsReceivableRecord.FormattedDateTime}',{accountsReceivableRecord.PaymentMethod},{accountsReceivableRecord.CashType},{accountsReceivableRecord.BillDetailEntryNo},'{accountsReceivableRecord.TransactionRefrence}');";
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+
+                connection.Close();
+            }            
 
             return accountsReceivableRecord;
         }
@@ -4501,11 +4514,11 @@ namespace clinic
         {
             var items = context.AccountsReceivables.AsQueryable();
 
-            items = items.Include(i => i.PaymentMethod1);
+            //items = items.Include(i => i.PaymentMethod1);
 
-            items = items.Include(i => i.CashType1);
+            //items = items.Include(i => i.CashType1);
 
-            items = items.Include(i => i.BillDetail1);
+            //items = items.Include(i => i.BillDetail1);
 
             if (query != null)
             {

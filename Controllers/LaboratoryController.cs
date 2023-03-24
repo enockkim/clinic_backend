@@ -93,7 +93,7 @@ namespace clinic.Controllers
         }
 
 
-        [HttpPost("")]
+        [HttpPost("TransferLab")]
         public async Task<bool> TransferLab([FromBody] Models.clinic.Laboratory createLaboratory)
         {
             //LaboratoriesComponent LaboratoriesComponent = new LaboratoriesComponent(clinic);
@@ -123,7 +123,7 @@ namespace clinic.Controllers
                 if (success && getLaboratoriesRes.Where(i => i.appointmentId == createLaboratory.appointmentId && i.status == 0).Count() == 0)
                 {
                     appointment.appointmentStatus = appointment.previousFacility;
-                    appointment.previousFacility = 4;
+                    appointment.previousFacility = 3;
                     await clinic.UpdateAppointment(createLaboratory.appointmentId, appointment);
                     //NotificationService.Notify(NotificationSeverity.Success, $"Success", $"Lab results saved. Patient successfully transfered.");
                     //selectedRecord = new List<clinic.Models.clinic.Laboratory>() { };

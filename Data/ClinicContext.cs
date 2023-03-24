@@ -204,17 +204,17 @@ namespace clinic.Data
             builder.Entity<clinic.Models.clinic.AccountsReceivable>()
                   .HasOne(i => i.PaymentMethod1)
                   .WithMany(i => i.AccountsReceivables)
-                  .HasForeignKey(i => i.paymentMethod)
+                  .HasForeignKey(i => i.PaymentMethod)
                   .HasPrincipalKey(i => i.methodId);
             builder.Entity<clinic.Models.clinic.AccountsReceivable>()
                   .HasOne(i => i.CashType1)
                   .WithMany(i => i.AccountsReceivables)
-                  .HasForeignKey(i => i.cashType1)
+                  .HasForeignKey(i => i.CashType)
                   .HasPrincipalKey(i => i.cashTypeId);
             builder.Entity<clinic.Models.clinic.AccountsReceivable>()
                   .HasOne(i => i.BillDetail1)
                   .WithMany(i => i.AccountsReceivables)
-                  .HasForeignKey(i => i.billDetailEntryNo)
+                  .HasForeignKey(i => i.BillDetailEntryNo)
                   .HasPrincipalKey(i => i.entryNo);
             builder.Entity<clinic.Models.clinic.AppointmentType>()
                   .HasOne(i => i.PatientType)

@@ -37,14 +37,45 @@ namespace clinic.Controllers
             List<Vital> Vital = new List<Vital>();
             try
             {
-                var res = clinic.GetVitals().Result;
-                Response.Headers.Add("Access-Control-Allow-Origin", "*");
-                return res.Where(i => i.appointmentId == appointmentId).ToList();
+                //var res = clinic.GetVitals().Result;
+                return clinic.GetVitals().Result.Where(i => i.appointmentId == appointmentId).ToList();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 return null;
+            }
+        }
+
+        [HttpPost("TransferFromVital")]
+        public async Task<bool> TransferFromVital([FromBody] Models.clinic.Vital vitals)
+        {
+            try
+            {
+                var appointment = await clinic.GetAppointmentByappointmentId(vitals.appointmentId);
+                switch (vitals.status)
+                {
+                    case 1:
+                        var consultationRecord = new Consultations
+                        {
+                            appointmentId = vitals.appointmentId
+                        };
+                        var clinicCreateAppointmentResult = await clinic.CreateConsultation(consultationRecord);
+                        appointment.appointmentStatus = vitals.status;
+                        await clinic.UpdateAppointment(vitals.appointmentId, appointment);
+                        vitals.status = 1;
+                        break;
+                    default:
+                        break;
+                }
+
+                var clinicUpdateAppointmentResult = await clinic.UpdateVital(vitals.vRecordId, vitals);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error TransferFromVital: "+ex.ToString());
+                return false;
             }
         }
     }

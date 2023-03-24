@@ -13,7 +13,7 @@ namespace clinic.Models.clinic
         public int vRecordId { get; set; }
         public DateTime timeTaken { get; set; } = DateTime.Now;
         public decimal? temperature { get; set; }
-        public string pressure { get; set; }
+        public string? pressure { get; set; }
         public decimal? pulseRate { get; set; }
         public int? respirationRate { get; set; }
         public decimal? weight { get; set; }
