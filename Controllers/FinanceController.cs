@@ -111,7 +111,7 @@ namespace clinic.Controllers
                     //update appointment record status
 
 
-                    appointment.appointmentStatus = appointment.previousFacility; // (int)clinic.GetBillDetails().Result.OrderByDescending(i => i.entryNo).Where(i => i.billNo == billNo).Select(i => i.facility).FirstOrDefault();
+                    appointment.appointmentStatus = appointment.previousFacility == 0 ? 10 : appointment.previousFacility; // (int)clinic.GetBillDetails().Result.OrderByDescending(i => i.entryNo).Where(i => i.billNo == billNo).Select(i => i.facility).FirstOrDefault();
                     appointment.previousFacility = appointment.appointmentType == 1 ? 15 : (appointment.appointmentType == 2 || appointment.appointmentType == 3 ? 1 : appointment.previousFacility); //TODO need to adjust logic to work with other facilities
                     await clinic.UpdateAppointment(appointment.appointmentId, appointment);
 

@@ -135,5 +135,85 @@ namespace clinic.Controllers
                 return null;
             }
         }
+
+        [HttpGet("GetUnitsOfMeasure")]
+        public ActionResult<IEnumerable<UnitOfMeasure>> GetUnitsOfMeasure()
+        {
+            try
+            {
+                var res = clinic.GetUnitOfMeasures().Result;
+                return res.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetUnitOfMeasures: " + ex.Message);
+                return null;
+            }
+        }
+
+        [HttpGet("GetAdministrationTypes")]
+        public ActionResult<IEnumerable<AdministrationType>> GetAdministrationTypes()
+        {
+            try
+            {
+                var res = clinic.GetAdministrationTypes().Result;
+                return res.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetAdministrationTypes: " + ex.Message);
+                return null;
+            }
+        }
+
+
+        [HttpPost("AddCategory")]
+        public InventoryCategory AddCategory([FromBody] InventoryCategory newCategory)
+        {
+            try
+            {
+                return clinic.CreateInventoryCategory(newCategory).Result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AddCategory error: "+ex.ToString());
+                return null;
+            }
+        }
+
+
+        [HttpPost("AddMedication")]
+        public Inventory AddMedication([FromBody] Inventory newMedication)
+        {
+            try
+            {
+                return clinic.CreateInventory(newMedication).Result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AddMedication error: " + ex.ToString());
+                return null;
+            }
+        }
+
+
+        [HttpPost("AddStock")]
+        public async Task<int> AddStock([FromBody] AddStock newStock)
+        {
+            try
+            {
+                var currentStock = await clinic.GetInventoryByitemId(newStock.itemId);
+                currentStock.stock += newStock.stock;
+                await clinic.UpdateInventory(currentStock.itemId, currentStock);
+
+                return currentStock.stock;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("AddStock error: " + ex.ToString());
+                return 0;
+            }
+        }
+
     }
 }

@@ -228,9 +228,23 @@ namespace clinic.Controllers
                 //update appoinment status to new facility depending on payment method, ie cash? send to accounts
                 if (args.paymentMethod == 1)
                 {
-                    args.previousFacility = args.appointmentStatus;
-                    args.appointmentStatus = 13;
+                    if((args.appointmentType == 3 || args.appointmentType == 2) && args.previousFacility == 0)
+                    {
+                        args.previousFacility = 0; //set to pending -> triage
 
+                        //create blank vital record
+                        clinic.CreateVital(new Vital()
+                        {
+                            appointmentId = args.appointmentId,
+                            status = 0
+                        });
+                    }
+                    else 
+                    {
+                        args.previousFacility = args.appointmentStatus;
+                    }
+
+                    args.appointmentStatus = 13;
                 }
                 else
                 {

@@ -10,7 +10,7 @@ namespace clinic.Models.clinic
     public partial class InventoryCategory
     {
         [Key]
-        public int categoryId { get; set; }
+        public int? categoryId { get; set; }
         public string categoryName { get; set; }
         [JsonIgnore]
         public ICollection<Inventory> Inventories { get; set; }

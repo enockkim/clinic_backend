@@ -1791,23 +1791,36 @@ namespace clinic
 
         partial void OnInventoryUpdated(Models.clinic.Inventory item);
 
-        public async Task<Models.clinic.Inventory> UpdateInventory(int? itemId, Models.clinic.Inventory Inventory)
+        public async Task<Models.clinic.Inventory> UpdateInventory(int? itemId, Models.clinic.Inventory inventory)
         {
-            OnInventoryUpdated(Inventory);
+            //OnInventoryUpdated(Inventory);
 
-            var item = context.Inventories
-                              .Where(i => i.itemId == itemId)
-                              .FirstOrDefault();
-            if (item == null)
+            //var item = context.Inventories
+            //                  .Where(i => i.itemId == itemId)
+            //                  .FirstOrDefault();
+            //if (item == null)
+            //{
+            //    throw new Exception("Item no longer available");
+            //}
+            //var entry = context.Entry(item);
+            //entry.CurrentValues.SetValues(Inventory);
+            //entry.State = EntityState.Modified;
+            //context.SaveChanges();
+
+
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
             {
-                throw new Exception("Item no longer available");
-            }
-            var entry = context.Entry(item);
-            entry.CurrentValues.SetValues(Inventory);
-            entry.State = EntityState.Modified;
-            context.SaveChanges();
+                connection.Open();
+                var query = $"UPDATE inventory set stock = {inventory.stock} where itemId = {inventory.itemId}";
 
-            return Inventory;
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+
+                connection.Close();
+            }
+
+
+            return inventory;
         }
 
         partial void OnStaffDeleted(Models.clinic.Employee item);
@@ -2587,14 +2600,25 @@ namespace clinic
 
         partial void OnInventoryCreated(Models.clinic.Inventory item);
 
-        public async Task<Models.clinic.Inventory> CreateInventory(Models.clinic.Inventory Inventory)
+        public async Task<Models.clinic.Inventory> CreateInventory(Models.clinic.Inventory inventory)
         {
-            OnInventoryCreated(Inventory);
+            //OnInventoryCreated(inventory);
 
-            context.Inventories.Add(Inventory);
-            context.SaveChanges();
+            //context.Inventories.Add(inventory);
+            //context.SaveChanges();
 
-            return Inventory;
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            {
+                connection.Open();
+                var query = $"INSERT INTO `clinic`.`inventory`(`category`,`brandName`,`medication`,`administrationType`,`unit`,`unitCost`,`stock`,`UnitOfMeasure`)VALUES({inventory.category},'{inventory.brandName}','{inventory.medication}',{inventory.administrationType},{inventory.unit1},{inventory.unitCost},0,{inventory.UnitOfMeasure}); SELECT LAST_INSERT_ID();";
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                inventory.itemId = Convert.ToInt32(cmd.ExecuteScalar());
+
+                connection.Close();
+            }
+
+            return inventory;
         }
         public async Task ExportInventoryCategoriesToExcel(Query query = null)
         {
@@ -2654,15 +2678,26 @@ namespace clinic
         }
 
         partial void OnInventoryCategoryCreated(Models.clinic.InventoryCategory item);
-
-        public async Task<Models.clinic.InventoryCategory> CreateInventoryCategory(Models.clinic.InventoryCategory InventoryCategory)
+            
+        public async Task<Models.clinic.InventoryCategory> CreateInventoryCategory(Models.clinic.InventoryCategory inventoryCategory)
         {
-            OnInventoryCategoryCreated(InventoryCategory);
+            //OnInventoryCategoryCreated(inventoryCategory);
 
-            context.InventoryCategories.Add(InventoryCategory);
-            context.SaveChanges();
+            //context.InventoryCategories.Add(inventoryCategory);
+            //context.SaveChanges();
 
-            return InventoryCategory;
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            {
+                connection.Open();
+                var query = $"INSERT INTO `clinic`.`inventory_category` (`categoryName`) VALUES ('{inventoryCategory.categoryName}'); SELECT LAST_INSERT_ID();";
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                inventoryCategory.categoryId = Convert.ToInt32(cmd.ExecuteScalar());
+
+                connection.Close();
+            }
+
+            return inventoryCategory;
         }
 
 

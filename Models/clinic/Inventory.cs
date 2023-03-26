@@ -32,4 +32,10 @@ namespace clinic.Models.clinic
         [JsonIgnore]
         public ICollection<Prescription> Prescriptions { get; set; }
     }
+
+    public class AddStock
+    {
+        public int itemId { get; set; }
+        public int stock { get; set; }
+    }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace clinic.Models.clinic
 {
@@ -9,20 +10,11 @@ namespace clinic.Models.clinic
   public partial class AdministrationType
   {
     [Key]
-    public int administrationTypeId
-    {
-      get;
-      set;
-    }
-
-
-    public ICollection<Inventory> Inventories { get; set; }
-
+    public int administrationTypeId { get; set; }
     [Column("administrationType")]
-    public string administrationType1
-    {
-      get;
-      set;
+        [JsonPropertyName("administrationType")]
+    public string administrationType1 { get; set; }
+        [JsonIgnore]
+        public ICollection<Inventory> Inventories { get; set; }
     }
-  }
 }
