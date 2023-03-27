@@ -198,7 +198,7 @@ namespace clinic.Controllers
 
 
         [HttpPost("AddStock")]
-        public async Task<int> AddStock([FromBody] AddStock newStock)
+        public async Task<Inventory> AddStock([FromBody] AddStock newStock)
         {
             try
             {
@@ -206,12 +206,12 @@ namespace clinic.Controllers
                 currentStock.stock += newStock.stock;
                 await clinic.UpdateInventory(currentStock.itemId, currentStock);
 
-                return currentStock.stock;
+                return currentStock;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("AddStock error: " + ex.ToString());
-                return 0;
+                return null;
             }
         }
 

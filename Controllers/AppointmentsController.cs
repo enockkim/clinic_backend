@@ -1,5 +1,7 @@
 ﻿using clinic.Models.clinic;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Math.EC.Endo;
 
 namespace clinic.Controllers
 {
@@ -377,6 +379,52 @@ namespace clinic.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        [HttpPost("ClearPatient")]
+        public async Task<bool> ClearPatient([FromQuery] int appointmentId)
+        {
+            try
+            {
+                using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+                {
+                    connection.Open();
+
+                    //clear appointment
+                    var query = $"UPDATE appointment set appointmentStatus = 14 where appointmentId = {appointmentId}";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.ExecuteNonQuery();
+
+                    //clear prescription
+                    var prescriptionItems = clinic.GetPrescriptions().Result.Where(i => i.appointmentId == appointmentId).ToList();
+
+                    foreach(var prescription in prescriptionItems)
+                    {
+                        query = $"UPDATE `clinic`.`prescription` SET `status` = '1' WHERE (`prescriptionId` = '{prescription.prescriptionId}');";
+                        cmd = new MySqlCommand(query, connection);
+                        cmd.ExecuteNonQuery();
+
+                        if(prescription.availability == 1)
+                        {
+                            var stock = clinic.GetInventoryByitemId(prescription.itemId).Result.stock;
+                            var newStock = stock - prescription.dosageNumber;
+
+                            query = $"UPDATE `clinic`.`inventory` SET `stock` = '{newStock}' WHERE (`itemId` = '{prescription.itemId}');";
+                            cmd = new MySqlCommand(query, connection);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    connection.Close();
+                }
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("ClearPatient: "+ex.Message);
                 return false;
             }
         }
