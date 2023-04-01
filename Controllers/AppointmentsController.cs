@@ -388,7 +388,7 @@ namespace clinic.Controllers
         {
             try
             {
-                using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+                using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
                 {
                     connection.Open();
 

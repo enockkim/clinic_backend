@@ -224,13 +224,13 @@ namespace clinic.Data
             builder.Entity<clinic.Models.clinic.Subcounty>()
                   .HasOne(i => i.County)
                   .WithMany(i => i.Subcounties)
-                  .HasForeignKey(i => i.countyId)
+                  .HasForeignKey(i => i.county_id)
                   .HasPrincipalKey(i => i.id);
             builder.Entity<clinic.Models.clinic.Ward>()
                   .HasOne(i => i.Subcounty)
                   .WithMany(i => i.Ward)
                   .HasForeignKey(i => i.subcountyId)
-                  .HasPrincipalKey(i => i.subcountyId);
+                  .HasPrincipalKey(i => i.id);
             builder.Entity<clinic.Models.clinic.AccountsPayable>()
                   .HasOne(i => i.PaymentMethod1)
                   .WithMany(i => i.AccountsPayable)

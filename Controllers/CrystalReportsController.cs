@@ -30,7 +30,7 @@ namespace clinic.Controllers
             // Initialize Crystal Reports runtime
             ReportDocument report = new ReportDocument();
             report.Load(reportPath);
-            report.SetDatabaseLogon("remote4", "$C3u+X[Nm-gg6E!j", "localhost", "clinic");
+            report.SetDatabaseLogon("remote", "#3PqKZ$F3G=y9NSD", "localhost", "clinic");
 
             // Set data source
             report.SetDataSource("remote");

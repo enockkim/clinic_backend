@@ -38,6 +38,7 @@ namespace clinic.Controllers
                     patientId = clinicCreatePatientResult.patientId,
                     employeeId = 0 //default
                 };
+
                 var clinicCreateAppointmentResult = await clinic.CreateAppointment(appointment);
 
                 Bill bill = new Bill()
@@ -46,6 +47,26 @@ namespace clinic.Controllers
                     status = 0
                 };
                 await clinic.CreateBill(bill);
+
+
+                //UriHelper.NavigateTo("add-patient", true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
+
+        [HttpPost("UpdatePatient")]
+        public async Task<bool> UpdatePatient([FromBody] CreatePatient createPatient)
+        {
+            //AddPatientComponent addPatientComponent = new AddPatientComponent(clinic);
+            try
+            {
+                //return addPatientComponent.CreatePatient(createPatient).Result;
+                var clinicCreatePatientResult = await clinic.UpdatePatient(createPatient.patientData.patientId, createPatient.patientData);
 
 
                 //UriHelper.NavigateTo("add-patient", true);

@@ -33,6 +33,7 @@ namespace clinic.Models.clinic
         public int? nokContact { get; set; }
         public int nokRelationship { get; set; }
         public int? idNumber { get; set; }
+        public int? employmentType { get; set; }
 
         [JsonIgnore]
         public ICollection<Appointment> Appointments { get; set; }
@@ -47,5 +48,11 @@ namespace clinic.Models.clinic
     {
         public Employee employeeData { get; set; }
         public ApplicationUser userData { get; set; }
+    }
+
+    public class EmploymentType
+    {
+        public int employmentTypeId { get; set; }
+        public string employmentType { get; set; }
     }
 }

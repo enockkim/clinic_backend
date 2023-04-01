@@ -33,6 +33,7 @@ namespace clinic.Models.clinic
         public int subcounty { get; set; }
         public int ward { get; set; }
         public int status { get; set; }
+        public string? email { get; set; }
     }
 
     public class CreatePatient

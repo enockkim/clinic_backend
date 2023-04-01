@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace clinic.Models.clinic
 {
@@ -10,16 +11,9 @@ namespace clinic.Models.clinic
   {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int id
-    {
-      get;
-      set;
-    }
-    public string county_name
-    {
-      get;
-      set;
-    }
+    public int id { get; set; }
+        public string county_name { get; set; }
+        [JsonIgnore]
         public ICollection<Subcounty> Subcounties { get; set; }
     }
 }

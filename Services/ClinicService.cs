@@ -1808,7 +1808,7 @@ namespace clinic
             //context.SaveChanges();
 
 
-            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
             {
                 connection.Open();
                 var query = $"UPDATE inventory set stock = {inventory.stock} where itemId = {inventory.itemId}";
@@ -2607,7 +2607,7 @@ namespace clinic
             //context.Inventories.Add(inventory);
             //context.SaveChanges();
 
-            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
             {
                 connection.Open();
                 var query = $"INSERT INTO `clinic`.`inventory`(`category`,`brandName`,`medication`,`administrationType`,`unit`,`unitCost`,`stock`,`UnitOfMeasure`)VALUES({inventory.category},'{inventory.brandName}','{inventory.medication}',{inventory.administrationType},{inventory.unit1},{inventory.unitCost},0,{inventory.UnitOfMeasure}); SELECT LAST_INSERT_ID();";
@@ -2686,7 +2686,7 @@ namespace clinic
             //context.InventoryCategories.Add(inventoryCategory);
             //context.SaveChanges();
 
-            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
             {
                 connection.Open();
                 var query = $"INSERT INTO `clinic`.`inventory_category` (`categoryName`) VALUES ('{inventoryCategory.categoryName}'); SELECT LAST_INSERT_ID();";
@@ -4273,7 +4273,7 @@ namespace clinic
             //context.AccountsReceivables.Add(accountsReceivableRecord);
             //context.SaveChanges();
 
-            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100"))
+            using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
             {
                 connection.Open();
                 var query = $"INSERT INTO `clinic`.`accounts_receivable`(`amountDue`,`amountPaid`,`dateOfTransaction`,`paymentMethod`,`cashType`,`billDetailEntryNo`,`transactionRefrence`)VALUES({accountsReceivableRecord.AmountDue},{accountsReceivableRecord.AmountPaid},'{accountsReceivableRecord.FormattedDateTime}',{accountsReceivableRecord.PaymentMethod},{accountsReceivableRecord.CashType},{accountsReceivableRecord.BillDetailEntryNo},'{accountsReceivableRecord.TransactionRefrence}');";

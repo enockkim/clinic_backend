@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using clinic.Data;
 using Microsoft.AspNetCore.Mvc;
 
-//public static string connString = "Server=localhost;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100";
+//public static string connString = "Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100";
 var builder = WebApplication.CreateBuilder(args);
 //var MyAllowSpecificOrigins = "http://localhost:4200";
 
@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ClinicContext>(options =>
 {
-    string connectionString = "Server=202.182.120.224;Database=clinic;User ID=remote4;Password=$C3u+X[Nm-gg6E!j;Connection Timeout=100";
+    string connectionString = "Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100";
     //options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
     options.UseMySQL(connectionString);
 });
