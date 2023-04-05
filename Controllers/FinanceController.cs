@@ -50,6 +50,48 @@ namespace clinic.Controllers
                 return null;
             }
         }
+
+        [HttpGet("GetBillData")]
+        public ActionResult<IEnumerable<BillData>> GetBillData()
+        {
+            //FinancesComponent FinancesComponent = new FinancesComponent(clinic);
+            List<BillData> billData = new List<BillData>();
+            try
+            {
+                using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
+                {
+                    connection.Open();
+
+                    //clear appointment
+                    var query = $"call clinic.GetBillData();";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                    var reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        billData.Add(new BillData()
+                        {
+                            appointmentId = Convert.ToInt32(reader[0]),
+                            billNo = Convert.ToInt32(reader[1]),
+                            status = Convert.ToInt32(reader[2]),
+                            patientName = reader[3].ToString() + ", " + reader[4].ToString(),
+                            patientId = Convert.ToInt32(reader[5]),
+                            patientIdNumber = Convert.ToInt32(reader[6]),
+                        });
+                    }
+
+                    connection.Close();
+
+                    return billData;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetBillData: " + ex.ToString());
+                return null;
+            }
+        }
          
         [HttpGet("GetBillDetailsByBillNo")]
         public ActionResult<IEnumerable<BillDetail>> GetBillDetailsByBillNo(int billNo)  

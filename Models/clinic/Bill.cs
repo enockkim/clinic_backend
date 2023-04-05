@@ -19,4 +19,14 @@ namespace clinic.Models.clinic
     [JsonIgnore]
     public ICollection<BillDetail> BillDetails { get; set; }
   }
+
+    public class BillData
+    {
+        public int billNo { get; set; }
+        public int? appointmentId { get; set; }
+        public int patientId { get; set; }
+        public int patientIdNumber { get; set; }
+        public string patientName { get; set; }
+        public int status { get; set; }
+    }
 }

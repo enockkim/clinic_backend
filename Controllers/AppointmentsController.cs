@@ -17,35 +17,48 @@ namespace clinic.Controllers
         }
 
 
-        //[HttpPost(Name = "AddAppointment")]
-        //public async Task<bool> AddAppointment([FromBody] Models.clinic.Appointment appointment)
-        //{
-        //    //AddAppointmentComponent addAppointmentComponent = new AddAppointmentComponent(clinic);
-        //    try
-        //    {
-        //        //return addAppointmentComponent.CreateAppointment(createAppointment).Result;
+        [HttpPost("AddAppointment")]
+        public async Task<bool> AddAppointment([FromBody] Models.clinic.Appointment appointment)
+        {
+            //AddAppointmentComponent addAppointmentComponent = new AddAppointmentComponent(clinic);
+            try
+            {
+                //return addAppointmentComponent.CreateAppointment(createAppointment).Result;
 
-        //        appointment.appointmentStatus = 0;
-        //        //appointment.createdBy = Security.User.Id;
-        //        appointment.dateOfCreation = DateTime.Now;
-        //        //appointment.patientType = clinic.GetAppointmentTypes().Result.Where(i => i.typeId == appointment.appointmentType).Select(i => i.patientType).FirstOrDefault();
-        //        var clinicCreateAppointmentResult = await clinic.CreateAppointment(appointment);
+                appointment.appointmentStatus = 0;
+                //appointment.createdBy = Security.User.Id;
+                appointment.dateOfCreation = DateTime.Now;
+                appointment.patientType = clinic.GetAppointmentTypes().Result.Where(i => i.typeId == appointment.appointmentType).Select(i => i.patientType).FirstOrDefault();
+                var clinicCreateAppointmentResult = await clinic.CreateAppointment(appointment);
 
-        //        Bill bill = new Bill()
-        //        {
-        //            appointmentId = clinicCreateAppointmentResult.appointmentId,
-        //            status = 0
-        //        };
-        //        await clinic.CreateBill(bill);
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.ToString());
-        //        return false;
-        //    }
-        //}
+                Bill bill = new Bill()
+                {
+                    appointmentId = clinicCreateAppointmentResult.appointmentId,
+                    status = 0
+                };
+                await clinic.CreateBill(bill);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
+        }
 
+        [HttpGet("GetAppointmentTypes")]
+        public async Task<List<AppointmentType>> GetAppointmentTypes()
+        {
+            try
+            {
+                return clinic.GetAppointmentTypes().Result.ToList();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("GetAppointmentTypes error: ",ex.Message);
+                return null;
+            }
+        }
 
         [HttpGet("GetAppointments")]
         public async Task<List<AppointmentData>> GetAppointments([FromQuery] int appointmentType, int appointmentStatus)
@@ -102,7 +115,7 @@ namespace clinic.Controllers
         }
 
         [HttpPost("TransferPatient")]
-        public async Task<bool> TransferPatient([FromBody] Models.clinic.AppointmentData appointmentData)
+        public async Task<int> TransferPatient([FromBody] Models.clinic.AppointmentData appointmentData)
         {
             //// Create a mapping between the AppointmentData and Appointment classes
             //var config = new MapperConfiguration(cfg => {
@@ -113,6 +126,8 @@ namespace clinic.Controllers
             //var mapper = new Mapper(config);
 
             //var appoointmentUpdate = mapper.Map<Models.clinic.Appointment>(appointmentData);
+
+            int newFacility = 0;
 
             var appoointmentUpdate = new Models.clinic.Appointment()
             {
@@ -147,27 +162,27 @@ namespace clinic.Controllers
                         await clinic.CreateConsultation(consultationRecord);
                         appoointmentUpdate.appointmentType = 3;
                         appoointmentUpdate.patientType = 2;
-                        ProcessPatientTransfer("consultation fee", appoointmentUpdate, 2);
+                        newFacility = await ProcessPatientTransfer("consultation fee", appoointmentUpdate, 2);
                         break;
                     case 2:
                         appoointmentUpdate.patientType = 1;
-                        ProcessPatientTransfer("maternity fee", appoointmentUpdate, 1);
+                        newFacility = await ProcessPatientTransfer("maternity fee", appoointmentUpdate, 1);
                         break;
                     case 6:
                         appoointmentUpdate.patientType = 1;
-                        ProcessPatientTransfer("emergency and casualty fee", appoointmentUpdate, 1);
+                        newFacility = await ProcessPatientTransfer("emergency and casualty fee", appoointmentUpdate, 1);
                         break;
                     case 7:
                         appoointmentUpdate.patientType = 1;
-                        ProcessPatientTransfer("ward admission fee", appoointmentUpdate, 1);
+                        newFacility = await ProcessPatientTransfer("ward admission fee", appoointmentUpdate, 1);
                         break;
                     case 8:
                         appoointmentUpdate.patientType = 1;
-                        ProcessPatientTransfer("icu admission fee", appoointmentUpdate, 1);
+                        newFacility = await ProcessPatientTransfer("icu admission fee", appoointmentUpdate, 1);
                         break;
                     case 9:
                         appoointmentUpdate.patientType = 1;
-                        ProcessPatientTransfer("moturary fee", appoointmentUpdate, 1);
+                        newFacility = await ProcessPatientTransfer("moturary fee", appoointmentUpdate, 1);
                         break;
                     case 15:
                         consultationRecord = new Consultations
@@ -178,12 +193,12 @@ namespace clinic.Controllers
                         await clinic.CreateConsultation(consultationRecord);
                         appoointmentUpdate.appointmentType = 1;
                         appoointmentUpdate.patientType = 2;
-                        ProcessPatientTransfer("dental consultation fee", appoointmentUpdate, 2);
+                        newFacility = await ProcessPatientTransfer("dental consultation fee", appoointmentUpdate, 2);
                         break;
                     case 10:
                         appoointmentUpdate.appointmentType = 3;
                         appoointmentUpdate.patientType = 2;
-                        ProcessPatientTransfer("vital fee", appoointmentUpdate, 2);
+                        newFacility = await ProcessPatientTransfer("vital fee", appoointmentUpdate, 2);
                         //create vital record
                         var triageRecord = new Vital
                         {
@@ -197,17 +212,17 @@ namespace clinic.Controllers
                         break;
                 }
 
-                return true;
+                return newFacility;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return false;
+                return newFacility;
             }
         }
 
         [NonAction]
-        public async void ProcessPatientTransfer(string detail, Appointment args, int patientType)
+        public async Task<int> ProcessPatientTransfer(string detail, Appointment args, int patientType)
         {
             //Create bill record
             var billed = clinic.GetBillDetails().Result.Where(i => i.Bill.appointmentId == args.appointmentId && i.facility == 1).Any();
@@ -265,31 +280,33 @@ namespace clinic.Controllers
             var facilityName = getFacilityStatusRes.Where(i => i.facilityId == args.appointmentStatus).Select(i => i.facilityName).FirstOrDefault();
             if (args.paymentMethod == 1)
                 facilityName = "Cashier";
+
+            return args.appointmentStatus;
         }
 
 
         [HttpPost("EditAppointment")]
-        public bool EditAppointment([FromBody] Models.clinic.AppointmentData editAppointmentData)
+        public bool EditAppointment([FromBody] Models.clinic.Appointment editAppointmentData)
         {
             //AddAppointmentComponent addAppointmentComponent = new AddAppointmentComponent(clinic);
             try
             {
-                Models.clinic.Appointment editedAppointmentData = new Models.clinic.Appointment()
-                {
-                    appointmentId = editAppointmentData.appointmentId,
-                    patientId = editAppointmentData.patientId,
-                    employeeId = editAppointmentData.employeeId,
-                    dateOfAppointment = editAppointmentData.dateOfAppointment,
-                    remarks = editAppointmentData.remarks,
-                    appointmentStatus = editAppointmentData.appointmentStatus,
-                    paymentMethod = editAppointmentData.paymentMethod,
-                    appointmentType = editAppointmentData.appointmentType,
-                    dateOfCreation = editAppointmentData.dateOfCreation,
-                    createdBy = editAppointmentData.createdBy,
-                    patientType = editAppointmentData.patientType,
-                    previousFacility = editAppointmentData.previousFacility
-                };
-                clinic.UpdateAppointment(editAppointmentData.appointmentId, editedAppointmentData);
+                //Models.clinic.Appointment editedAppointmentData = new Models.clinic.Appointment()
+                //{
+                //    appointmentId = editAppointmentData.appointmentId,
+                //    patientId = editAppointmentData.patientId,
+                //    employeeId = editAppointmentData.employeeId,
+                //    dateOfAppointment = editAppointmentData.dateOfAppointment,
+                //    remarks = editAppointmentData.remarks,
+                //    appointmentStatus = editAppointmentData.appointmentStatus,
+                //    paymentMethod = editAppointmentData.paymentMethod,
+                //    appointmentType = editAppointmentData.appointmentType,
+                //    dateOfCreation = editAppointmentData.dateOfCreation,
+                //    createdBy = editAppointmentData.createdBy,
+                //    patientType = editAppointmentData.patientType,
+                //    previousFacility = editAppointmentData.previousFacility
+                //};
+                clinic.UpdateAppointment(editAppointmentData.appointmentId, editAppointmentData);
                 return true;
             }
             catch (Exception ex)
@@ -388,7 +405,7 @@ namespace clinic.Controllers
         {
             try
             {
-                using (var connection = new MySqlConnection("Server=202.182.120.224;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
+                using (var connection = new MySqlConnection("Server=localhost;Database=clinic;User ID=remote;Password=#3PqKZ$F3G=y9NSD;Connection Timeout=100"))
                 {
                     connection.Open();
 
